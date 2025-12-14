@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대전 토박이의 카페탐방</title>
+    
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            text-align: center;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+
+        header {
+            padding: 20px;
+            background-color: #4a3b32; /* 커피색 */
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        /* 5개의 구를 담는 컨테이너 */
+        #container {
+            width: 95%;
+            margin: 0 auto;
+        }
+
+        /* 5개의 구 박스 디자인 */
+        .gu-box {
+            display: inline-block; /* 옆으로 나열 */
+            width: 18%; 
+            height: 300px;
+            margin: 5px;
+            vertical-align: top;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s, border 0.3s;
+            box-sizing: border-box; 
+        }
+
+        /* 각 구별 배경색 구분 */
+        #seo-gu { background-color: #ffcccc; }
+        #dong-gu { background-color: #ccffcc; }
+        #jung-gu { background-color: #ccccff; }
+        #yuseong-gu { background-color: #ffffcc; }
+        #daedeok-gu { background-color: #ffccff; }
+
+        /* 마우스 올렸을 때 효과 */
+        .gu-box:hover {
+            border: 2px solid #000;
+            transform: translateY(-5px);
+        }
+
+        /* 동 선택 버튼 스타일 */
+        .dong-btn {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 8px;
+            background-color: white;
+            border: 1px solid #888;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .dong-btn:hover {
+            background-color: #eee;
+        }
+
+        /* 결과 화면 디자인 */
+        #result-area {
+            margin-top: 30px;
+            border-top: 2px dashed #bbb;
+            padding: 20px;
+        }
+
+        /* 카페 정보 카드 스타일 (크기 키움) */
+        .cafe-card {
+            display: inline-block;
+            border: 2px solid #4a3b32;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            background-color: #fff;
+            width: 550px; /* 사진 3개를 넣기 위해 가로 폭을 넓혔습니다 */
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.1);
+        }
+
+        /* [추가된 CSS] 사진 3개 갤러리 디자인 */
+        .image-gallery {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            height: 150px;
+        }
+
+        .cafe-image-item {
+            width: 32%; /* 3등분 */
+            height: 100%;
+            border: 1px solid #ddd;
+            overflow: hidden; /* 사진이 박스 넘치면 자르기 */
+        }
+
+        .cafe-image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 박스 꽉 채우기 */
+        }
+    </style>
+</head>
+<body>
+
+   <header>
+        <h1>☕ 대전 토박이의 카페탐방</h1>
+        <div class="slogan-box">
+            <span>"노잼 도시? NO! 꿀잼 카페 도시!"</span><br>
+            대전 토박이가 엄선한 5가지 지역의 카페를 만나보세요.
+        </div>
+    </header>
+
+    <div id="container">
+        <div class="gu-box" id="seo-gu" onclick="selectGu('서구')">
+            <h2>서구</h2>
+            <div class="dong-list" id="list-서구"></div>
+        </div>
+
+        <div class="gu-box" id="dong-gu" onclick="selectGu('동구')">
+            <h2>동구</h2>
+            <div class="dong-list" id="list-동구"></div>
+        </div>
+
+        <div class="gu-box" id="jung-gu" onclick="selectGu('중구')">
+            <h2>중구</h2>
+            <div class="dong-list" id="list-중구"></div>
+        </div>
+
+        <div class="gu-box" id="yuseong-gu" onclick="selectGu('유성구')">
+            <h2>유성구</h2>
+            <div class="dong-list" id="list-유성구"></div>
+        </div>
+
+        <div class="gu-box" id="daedeok-gu" onclick="selectGu('대덕구')">
+            <h2>대덕구</h2>
+            <div class="dong-list" id="list-대덕구"></div>
+        </div>
+    </div>
+
+    <div id="result-area">
+        <h2 id="selected-info">지역을 선택해주세요.</h2>
+        <div id="cafe-display"></div>
+    </div>
+
+    <script>
+        // 데이터 준비 (모든 데이터를 images 배열 형태로 통일했습니다)
+        const daejeonData = {
+            "서구": {
+                "둔산동": [{name: "루스티카", feature: "도심 속 힐링, 저녁에는 매력적인 펍으로 즐기세요!", images: ["사진/루스티카1.jpg", "사진/루스티카2.jpg", "사진/루스티카3.jpg"]}],
+                "탄방동": [{name: "릴베이커스", feature: "아늑한 분위기, 말차코어의 핫플로 페스츄리 빵이 시그니처", images: ["사진/릴베이커스1.jpg", "사진/릴베이커스2.jpg", "사진/릴베이커스3.jpg"]}],
+                "갈마동": [{name: "차의 계절", feature: "차의 매력을 흠뻑 느낄 수 있는, 애프터눈티 세트 맛집", images: ["사진/차의 계절1.jpg", "사진/차의 계절2.jpg", "사진/차의 계절3.jpg"]}]
+            },
+            "동구": {
+                "소제동": [{name: "소제 솔루나", feature: "브런치의 정석, 따듯한 굴라쉬 스프로 브런치를.", images: ["사진/소제솔루나1.jpg", "사진/소제솔루나2.jpg", "사진/소제솔루나3.jpg"]}],
+                "가양동": [{name: "플라잉 스콘", feature: "스콘의 향연, 더블초코와 오렌지 그리고 바질 스콘은 강추", images: ["사진/플라잉스콘1.jpg", "사진/플라잉스콘2.jpg", "사진/플라잉스콘3.jpg"]}],
+                "자양동": [{name: "콜드바", feature: "부드러운 푸딩과 과일시럽을 블렌딩한 허브티", images: ["사진/콜드바1.jpg", "사진/콜드바2.jpg", "사진/콜드바3.jpg"]}]
+            },
+            "중구": {
+                "은행동": [{name: "커닝", feature: "케이크의 성지, 3호점까지 오픈한 핫플", images: ["사진/커닝1.jpg", "사진/커닝2.jpg", "사진/커닝3.jpg"]}],
+                "대흥동": [{name: "100sheets", feature: "퐁신한 수플레 펜케이크 맛집. 저녁엔 잔잔한 분위기", images: ["사진/100sheets1.jpg", "사진/100sheets2.jpg", "사진/100sheets3.jpg"]}],
+                "선화동": [{name: "오늘여기우리", feature: "꾸덕한 바스크 케이크와 프랑스 감성 인테리어", images: ["사진/오늘1.jpg", "사진/오늘2.jpg", "사진/오늘3.jpg"]}]
+            },
+            "유성구": {
+                "봉명동": [{name: "소아브", feature: "달달한 프렌치토스트의 정석", images: ["사진/소아브1.jpg", "사진/소아브2.jpg", "사진/소아브3.jpg"]}],
+                "궁동": [{name: "미들슬로우", feature: "친구들끼리 보드게임 한판, 그리고 귀여운 강아지까지", images: ["사진/미들슬로우1.jpg", "사진/미들슬로우2.jpg", "사진/미들슬로우3.jpg"]}],
+                "죽동": [{name: "Leafful", feature: "코지한 커피 맛집! 플랫화이트의 고소한 향", images: ["사진/leafful1.jpg", "사진/leafful2.jpg", "사진/leafful3.jpg"]}]
+            },
+            "대덕구": {
+                "송촌동": [{name: "5959", feature: "달달한 디저트와 음료를 코타츠에서!", images: ["사진/5959카페1.jpg", "사진/5959카페2.jpg", "사진/5959카페3.jpg"]}],
+                "중리동": [{name: "사랑과 화평", feature: "이름값하는 토스트맛집, 평화는 달달한 디저트로부터", images: ["사진/사랑과 화평1.jpg", "사진/사랑과 화평2.jpg", "사진/사랑과 화평3.jpg"]}],
+                "신탄진동": [{name: "두두당", feature: "대청호 뷰 한옥 카페, 드라이브 코스 추천", images: ["사진/두두당1.jpg", "사진/두두당2.jpg", "사진/두두당3.jpg"]}]
+            }
+        };
+
+        // 구 선택 함수
+        function selectGu(guName) {
+            alert(guName + "를 선택하셨습니다! 하위 동을 선택해주세요.");
+
+            const lists = document.getElementsByClassName("dong-list");
+            for(let i=0; i<lists.length; i++) {
+                lists[i].innerHTML = "";
+            }
+
+            const dongs = daejeonData[guName]; 
+            const listDiv = document.getElementById("list-" + guName);
+
+            for(let dong in dongs) {
+                let btn = document.createElement("button");
+                btn.innerHTML = dong;
+                btn.className = "dong-btn";
+                
+                btn.onclick = function(event) {
+                    event.stopPropagation(); 
+                    showCafes(guName, dong);
+                };
+                
+                listDiv.appendChild(btn);
+            }
+        }
+
+        // 동 선택 및 카페 보여주기 함수 (사진 3개 반복문 적용)
+        function showCafes(gu, dong) {
+            alert(dong + "의 카페 정보를 불러옵니다.");
+
+            const resultHeader = document.getElementById("selected-info");
+            const resultArea = document.getElementById("cafe-display");
+            
+            resultHeader.innerHTML = gu + " > " + dong + " 카페 탐방";
+            resultArea.innerHTML = ""; 
+
+            const cafeList = daejeonData[gu][dong];
+
+            // 카페 리스트 출력
+            for(let i=0; i<cafeList.length; i++) {
+                let cafe = cafeList[i];
+                
+                // --- 여기서부터 사진 3개를 만드는 로직입니다 ---
+                let imageHtml = ''; 
+
+                // 데이터에 images가 있으면 3번 반복해서 태그를 만듦
+                if(cafe.images) {
+                    for(let j=0; j<cafe.images.length; j++) {
+                        imageHtml += `
+                            <div class="cafe-image-item">
+                                <img src="${cafe.images[j]}" alt="카페사진">
+                            </div>
+                        `;
+                    }
+                } else {
+                     imageHtml = "사진 없음";
+                }
+
+                // --- 결과 화면 구성 ---
+                let htmlContent = `
+                    <div class="cafe-card">
+                        <h3>☕ ${cafe.name}</h3>
+                        <div class="image-gallery">
+                            ${imageHtml}
+                        </div>
+                        <p style="margin-top:15px;"><b>특징:</b> ${cafe.feature}</p>
+                    </div>
+                `;
+                resultArea.innerHTML += htmlContent;
+            }
+        }
+    </script>
+</body>
+</html>
